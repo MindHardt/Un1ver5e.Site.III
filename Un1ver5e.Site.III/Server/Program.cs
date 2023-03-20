@@ -1,17 +1,22 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
-using Un1ver5e.Site.III.Server.Data;
-using Un1ver5e.Site.III.Server.Models;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-
-
-app.Run();
+Host.CreateDefaultBuilder(args)
+	.ConfigureAppConfiguration(config =>
+	{
+		config
+		.AddJsonFile("appsettings.json", optional: true)
+		.AddJsonFile("appsettings.development.json", optional: true)
+		.AddUserSecrets<Program>(optional: true)
+		.AddEnvironmentVariables();
+	})
+	.UseSerilog((ctx, logger) =>
+	{
+		logger
+		.ReadFrom.Configuration(ctx.Configuration);
+	})
+	.ConfigureWebHostDefaults(webBuilder =>
+	{
+		webBuilder.UseStartup<Un1ver5e.Site.III.Server.Startup>();
+	})
+	.Build()
+	.Run();
